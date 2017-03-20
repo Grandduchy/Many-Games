@@ -3,6 +3,8 @@
 #include <map>
 #include <random>
 #include <ctime>
+#include <windows.h>
+#include "Functions.h"
 class Player;
 
 class SnakeLadder {
@@ -104,16 +106,73 @@ void SnakeLadder::create_ladd_n_snake() {
 }
 
 
-class Player {
+
+class SNL_Player_Structure {
 public:
-private:
+	SNL_Player_Structure(const int& i = 0, bool b = false) : position(i),instant(b) {};
+	virtual void roll_dice() = 0;
+	bool won = false;
+protected:
+	int position;
+	bool instant;
 };
+
+class SNI_Ai : public SNL_Player_Structure {
+public:
+	SNI_Ai(const string& player,const int& pos = 0, bool inst = true) : SNL_Player_Structure(pos,inst), name(player){};
+	virtual void roll_dice() override;
+private:
+	string name;
+};
+
+void SNI_Ai::roll_dice() {
+	static std::default_random_engine engine;
+	static std::uniform_int_distribution<unsigned> rng(1, 6);
+	int roll = rng(engine);
+	position += roll;
+	if (position >= 100) {
+		won = true;
+		position = 100;
+	}
+	cout << name << " has rolled a " << roll << " and is now on tile " << position << endl;
+	if (!instant) 
+		Sleep(500);
+}
+
+class SNI_Player : public SNL_Player_Structure {
+public:
+	SNI_Player(const int& i = 0, bool b = false) : SNL_Player_Structure(i, b) {};
+	virtual void roll_dice() override;
+};
+
+void SNI_Player::roll_dice() {
+	static std::default_random_engine engine;
+	static std::uniform_int_distribution<unsigned> rng(1, 6);
+	int roll = rng(engine);
+	cout << "It's now your turn. " << endl;
+	if (!instant) {
+		string input = check("Invalid input, enter 'roll' to roll the dice, or 'instantaneous' for the game to roll it for you.", { "roll","instantaneous" });
+		if (input == "instantaneous")
+			instant = true;
+	}
+	position += roll;
+	if (position >= 100) {
+		won = true;
+		position = 100;
+	}
+	cout << "You have rolled a " << roll << " and you are now at tile " << position << endl;
+	
+	if (!instant)
+		Sleep(500);
+}
 
 #endif // !SNAKE_N_LADD_CLASS
 
 #ifndef SNAKE_N_LADD_GAME
 #define SNAKE_N_LADD_GAME
 
+void run_snake_n_ladd() {
 
+}
 
 #endif // !SNAKE_N_LADD_GAME

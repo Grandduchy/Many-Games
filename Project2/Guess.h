@@ -1,10 +1,10 @@
 #pragma once
 #include <deque>
 #include <random>
+#include <algorithm>
 #include <Windows.h>
 #include <ctime> //for time()
-extern void clear();
-extern char check(const string& message, const std::initializer_list<char>& criteria);
+#include "Functions.h"
 
 #ifndef GUESSCLASS
 #define GUESSCLASS
@@ -58,7 +58,7 @@ bool Guess::playAgain() {
 }
 
 void Guess::createSequence() {
-	vector<char> colors({ 'r','y','g','b','o','c' });
+	vector<char> colors({ 'r','y','g','b','p','c' });
 	static std::default_random_engine engine(std::time(0));
 	static std::uniform_int_distribution<int> rg(0, colors.size() - 1);
 	for (vector<char>::size_type sz = 0; sz != 4; sz++) {
@@ -68,6 +68,7 @@ void Guess::createSequence() {
 }
 
 void Guess::newGame() {
+	gusses = 10;
 	free();
 	sequence = new vector<char>();
 	createSequence();
